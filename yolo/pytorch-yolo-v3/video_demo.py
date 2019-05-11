@@ -65,12 +65,12 @@ def write(x, img):
     shape = [strLabel, c1xNum, c1yNum, c2xNum, c2yNum]
     boxList.append(shape)
 
-  #  print(boxList)
- 
+   # print(boxList)
+    
     with open("C:/yolo/pytorch-yolo-v3/test.txt", 'w') as f:
         f.write(str(boxList))
         f.write("\n")
-
+        f.close()
     t_size = cv2.getTextSize(label, cv2.FONT_HERSHEY_PLAIN, 1 , 1)[0]
     c2 = c1[0] + t_size[0] + 3, c1[1] + t_size[1] + 4
     cv2.rectangle(img, c1, c2,color, -1)
@@ -147,9 +147,9 @@ if __name__ == '__main__':
     a = cap.isOpened()   
     ret, frame = cap.read()
     img, orig_im, dim = prep_image(frame, inp_dim)
-   
+    
     while a:
-        
+        boxList = []    
      #  ret, frame = cap.read()
         if ret:
                 
