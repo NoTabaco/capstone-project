@@ -195,6 +195,7 @@ if __name__ == '__main__':
             list(map(lambda x: write(x, orig_im), output))
             cv2.imshow("ORGframe", orig_im)
             testHTML.writeHTML(boxList)
+            testHTML.writeCSS(boxList)
             key = cv2.waitKey(1)
             if key & 0xFF == ord('q'):
                 break
