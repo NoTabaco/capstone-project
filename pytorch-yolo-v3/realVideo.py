@@ -91,14 +91,11 @@ def write(x, img):
  
     boxList.insert(list_Sort(boxList, shape), shape)
     print(boxList)
-
-    """
+    
     with open("C:/yolo/pytorch-yolo-v3/test.txt", 'w') as f:
         f.write(str(boxList))
         f.write("\n")
         f.close()
-    """
-    
     t_size = cv2.getTextSize(label, cv2.FONT_HERSHEY_PLAIN, 1 , 1)[0]
     c2 = c1[0] + t_size[0] + 3, c1[1] + t_size[1] + 4
     cv2.rectangle(img, c1, c2,color, -1)
@@ -144,7 +141,9 @@ if __name__ == '__main__':
     num_classes = 80
 
     CUDA = torch.cuda.is_available()
+    
     bbox_attrs = 5 + num_classes
+    
     print("Loading network.....")
     model = Darknet(args.cfgfile)
     model.load_weights(args.weightsfile)
@@ -170,15 +169,15 @@ if __name__ == '__main__':
     
     frames = 0
     start = time.time() 
-    a = cap.isOpened()   
-    ret, frame = cap.read()
-    img, orig_im, dim = prep_image(frame, inp_dim)
+   ## a = cap.isOpened()   
+   ## ret, frame = cap.read()
+   ## img, orig_im, dim = prep_image(frame, inp_dim)
     
-    while a:
+    while cap.isOpened():
         boxList = []    
-     #  ret, frame = cap.read()
+        ret, frame = cap.read()
         if ret:
-                
+            img, orig_im, dim = prep_image(frame, inp_dim)    
             # Copy Image
             im_dim = torch.FloatTensor(dim).repeat(1,2)                        
        

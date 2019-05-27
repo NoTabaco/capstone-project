@@ -46,15 +46,17 @@ def prep_image(img, inp_dim):
 
 
 def list_Sort(boxList, shape):
-
+    length = 0
     if boxList == []:
-        return 0
+        return length
     else:
         for idx, val in enumerate(boxList):   
             if val[1] <= shape[1] and val[2] <= shape[2]:
+                length = idx
                 continue
             elif val[1] < shape[1] and val[2] > shape[2]:
                 if val[2] < shape[4]:
+                    length = idx
                     continue
                 else:
                     return idx
@@ -62,10 +64,11 @@ def list_Sort(boxList, shape):
                 if val[4] > shape[2]:
                     return idx
                 else:
+                    length = idx
                     continue
             else:
                 return idx
-
+        return length
 
 
 boxList = []
@@ -144,7 +147,9 @@ if __name__ == '__main__':
     num_classes = 80
 
     CUDA = torch.cuda.is_available()
+    
     bbox_attrs = 5 + num_classes
+    
     print("Loading network.....")
     model = Darknet(args.cfgfile)
     model.load_weights(args.weightsfile)
@@ -165,20 +170,23 @@ if __name__ == '__main__':
     videofile = args.video
     
     cap = cv2.VideoCapture(videofile)
-    
+    frame_width = int(cap.get(3))
+    frame_height = int(cap.get(4))
+    out = cv2.VideoWriter('video_out.mp4',cv2.VideoWriter_fourcc('M','J','P','G'), 30, (frame_width,frame_height))
     assert cap.isOpened(), 'Cannot capture source'
     
     frames = 0
     start = time.time() 
-    a = cap.isOpened()   
-    ret, frame = cap.read()
-    img, orig_im, dim = prep_image(frame, inp_dim)
+#    a = cap.isOpened()   
+#    ret, frame = cap.read()
+#    img, orig_im, dim = prep_image(frame, inp_dim)
     
-    while a:
+    while cap.isOpened():
         boxList = []    
-     #  ret, frame = cap.read()
+        ret, frame = cap.read()
         if ret:
                 
+            img, orig_im, dim = prep_image(frame, inp_dim)
             # Copy Image
             im_dim = torch.FloatTensor(dim).repeat(1,2)                        
        
@@ -198,6 +206,7 @@ if __name__ == '__main__':
                 key = cv2.waitKey(1)
                 if key & 0xFF == ord('q'):
                     break
+                out.write(orig_im)
                 continue
             
             
@@ -227,12 +236,12 @@ if __name__ == '__main__':
                 break
             frames += 1
             print("FPS of the video is {:5.2f}".format( frames / (time.time() - start)))
-
+            out.write(orig_im)
             
         else:
             break
     
 
-    
+out.release()    
     
 

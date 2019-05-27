@@ -1,56 +1,133 @@
 h1#h1_0{
+display: flex;
+position: absolute;
+text-align: center;
 margin: 20px;
-top: 30;
-left: 400;
-width: 640;
-height: 150;
+top: 2%;
+left: 14%;
+width: 43%;
+height: 16%;
+}
+div#p_0{
+display: flex;
+position: absolute;
+text-align: center;
+margin: 20px;
+top: 55%;
+left: 10%;
+width: 22%;
+height: 19%;
 }
 div#div_0{
+display: flex;
+position: absolute;
+text-align: center;
 margin: 20px;
-top: 180;
-left: 360;
-width: 440;
-height: 270;
-}
-p#p_0{
-margin: 20px;
-top: 450;
-left: 360;
-width: 360;
-height: 90;
+top: 19%;
+left: 12%;
+width: 25%;
+height: 44%;
 }
 div#div_1{
+display: flex;
+position: absolute;
+text-align: center;
 margin: 20px;
-top: 180;
-left: 840;
-width: 360;
-height: 300;
+top: 22%;
+left: 41%;
+width: 25%;
+height: 36%;
 }
-img#img_0{
+div#img_0{
+display: flex;
+position: absolute;
+text-align: center;
 margin: 20px;
-top: 180;
-left: 1240;
-width: 320;
-height: 240;
+top: 19%;
+left: 72%;
+width: 18%;
+height: 38%;
 }
-p#p_1{
+div#p_1{
+display: flex;
+position: absolute;
+text-align: center;
 margin: 20px;
-top: 450;
-left: 840;
-width: 360;
-height: 90;
+top: 58%;
+left: 43%;
+width: 20%;
+height: 13%;
 }
-p#p_2{
+div#p_2{
+display: flex;
+position: absolute;
+text-align: center;
 margin: 20px;
-top: 450;
-left: 1280;
-width: 280;
-height: 90;
+top: 61%;
+left: 72%;
+width: 18%;
+height: 11%;
 }
 button#button_0{
+display: flex;
+position: absolute;
+text-align: center;
 margin: 20px;
-top: 570;
-left: 840;
-width: 240;
-height: 90;
+top: 75%;
+left: 41%;
+width: 18%;
+height: 11%;
+}
+@media screen and (max-width:980px){
+    #container{
+        display: flex;
+        width:100%;
+    }
+}
+
+@media screen and (max-width:700px){
+    #container{
+        display: block;
+    }
+    #container button {
+        display: block;
+        position: relative;
+        float: none;
+        width: 300px;
+        top: auto;
+        left: auto;
+        
+    }
+    #container h1 {
+        display: block;
+        position: relative;
+        float: none;
+        width: 300px;
+        top: auto;
+        left: auto;
+    }
+    #container img {
+        display: block;
+        position: relative;
+        float: none;
+        width: 300px;
+        top: auto;
+        left: auto;
+    }
+    #container div {
+        display: block;
+        position: relative;
+        float: none;
+        width: 300px;
+        top: auto;
+        left: auto;
+    }
+    #container p {
+        display: block;
+        position: relative;
+        float: none;
+        width: 300px;
+        top: auto;
+        left: auto;
+    }
 }
