@@ -74,6 +74,7 @@ def list_Sort(boxList, shape):
 boxList = []
 shape = ['Default', 0, 0, 0, 0]
 
+
 def write(x, img):
     c1 = tuple(x[1:3].int())
     c2 = tuple(x[3:5].int())
@@ -82,7 +83,7 @@ def write(x, img):
     color = random.choice(colors)
     cv2.rectangle(img, c1, c2, color, 1)
 
-    ## label, c1 (x, y), c2 (x, y)
+    # label, c1 (x, y), c2 (x, y)
     strLabel = str(label)
     c1xNum = int(c1[0])
     c1yNum = int(c1[1])
@@ -91,17 +92,10 @@ def write(x, img):
     
     global shape
     shape = [strLabel, round(c1xNum, -1), round(c1yNum, -1), round(c2xNum, -1), round(c2yNum, -1)]
- 
-    boxList.insert(list_Sort(boxList, shape), shape)
-    print(boxList)
 
-    """
-    with open("C:/yolo/pytorch-yolo-v3/test.txt", 'w') as f:
-        f.write(str(boxList))
-        f.write("\n")
-        f.close()
-    """
-    
+    boxList.insert(list_Sort(boxList, shape), shape)
+    #print(boxList)
+
     t_size = cv2.getTextSize(label, cv2.FONT_HERSHEY_PLAIN, 1 , 1)[0]
     c2 = c1[0] + t_size[0] + 3, c1[1] + t_size[1] + 4
     cv2.rectangle(img, c1, c2,color, -1)
@@ -112,9 +106,8 @@ def write(x, img):
 def arg_parse():
     """
     Parse arguements to the detect module
-    
+
     """
-    
     
     parser = argparse.ArgumentParser(description='YOLO v3 Video Detection Module')
    
@@ -177,9 +170,6 @@ if __name__ == '__main__':
     
     frames = 0
     start = time.time() 
-#    a = cap.isOpened()   
-#    ret, frame = cap.read()
-#    img, orig_im, dim = prep_image(frame, inp_dim)
     
     while cap.isOpened():
         boxList = []    
@@ -190,7 +180,6 @@ if __name__ == '__main__':
             # Copy Image
             im_dim = torch.FloatTensor(dim).repeat(1,2)                        
        
-            
             if CUDA:
                 im_dim = im_dim.cuda()
                 img = img.cuda()
@@ -229,8 +218,22 @@ if __name__ == '__main__':
             
             list(map(lambda x: write(x, orig_im), output))
             cv2.imshow("ORGframe", orig_im)
-            testHTML.writeHTML(boxList)
-            testHTML.writeCSS(boxList)
+
+            beforeList = []
+            afterList = []
+            afterList = boxList
+            # 두 개 묶어서 list 갯수 변화시 HTML, CSS 실행
+            if len(beforeList) != len(afterList):
+                testHTML.writeHTML(boxList)
+                testHTML.writeCSS(boxList)
+            else:
+                for idx in beforeList:
+                    if beforeList[idx][0] != afterList[idx][0]:
+                        testHTML.writeHTML(boxList)
+                        testHTML.writeCSS(boxList)
+                        break
+            beforeList = afterList
+
             key = cv2.waitKey(1)
             if key & 0xFF == ord('q'):
                 break
@@ -241,7 +244,6 @@ if __name__ == '__main__':
         else:
             break
     
-
 out.release()    
     
 

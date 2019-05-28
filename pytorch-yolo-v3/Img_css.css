@@ -39,7 +39,7 @@ p {
 }
 
 .mdc-card__media{
-    height: 40%;
+    height: 50%;
 }
 
 
@@ -68,9 +68,15 @@ p {
 }
 
 .demo-card__primary {
-    padding: 1rem;
+    padding: 0.5rem;
     height: 15%;
+    line-height: 15%;
 }
+
+.demo-card__title{
+    vertical-align: middle;
+}
+
 user agent stylesheet
 div {
     display: block;
@@ -111,10 +117,8 @@ div {
     letter-spacing: .01786em;
 }
 .demo-card__secondary {
-    padding: 0 1rem 8px;
-    height: 30%;
-    line-height: 100%;
-    text-align: center;
+    padding: 0.5rem 1rem 8px;
+    height: 20%;
 }
 .demo-card__secondary, .demo-card__subtitle {
     color: var(--mdc-theme-text-secondary-on-background,rgba(0,0,0,.54));

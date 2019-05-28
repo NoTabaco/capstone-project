@@ -1,7 +1,6 @@
 body {
     height: 100vh;
     margin: 0;
-    display: flex;
     flex-direction: column;
     align-content: center;
     justify-content: center;
@@ -45,10 +44,9 @@ input[type="text"]{
     border: 2px; 
     border-bottom: 1px solid #444;
     outline: none;
+    text-align: left;
     }
 }
-
-
 
 input[type="text"]:focus{
     outline: none;

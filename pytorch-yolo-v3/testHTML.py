@@ -7,7 +7,6 @@ buttonNum = 0
 h1Num = 0
 pNum = 0
 
-
 def checkShape(parameter, doc, tag, text):
     
     global imgNum, divNum, buttonNum, h1Num, pNum
@@ -21,13 +20,12 @@ def checkShape(parameter, doc, tag, text):
         <div class="mdc-card__media mdc-card__media--16-9 demo-card__media" style="background-image: url(&quot;https://material-components.github.io/material-components-web-catalog/static/media/photos/3x2/2.jpg&quot;);">
         </div>
         <div class="demo-card__primary">
-            <h2 class="demo-card__title mdc-typography--headline6">Our Planet</h2>
+            <h2 class="demo-card__title mdc-typography--headline6">Our Image</h2>
         </div>
         <div class="demo-card__primary">
-            <h3 class="demo-card__subtitle mdc-typography--subtitle2">by Kurt Wagner</h3>
+            <h3 class="demo-card__subtitle mdc-typography--subtitle2">by AGH KJM</h3>
         </div>
-        <div class="demo-card__secondary mdc-typography--body2">Visit ten places.
-        </div>
+        <div class="demo-card__secondary mdc-typography--body2">Image Contents Web design Visit My Project.</div>
     </div>
 </div>
 """       
@@ -47,7 +45,6 @@ def checkShape(parameter, doc, tag, text):
         <div class="bg-light shadow-sm mx-auto" style = "width: 80%; height: 30%; border-radius: 21px 21px 0 0;"></div>
     </div>
 """
-
 
     if parameter[0]=='img':
         with tag('div', id ="img_"+ str(imgNum)):
@@ -73,15 +70,14 @@ def checkShape(parameter, doc, tag, text):
         print(0)
         
 
-# <link href="./Product example · Bootstrap_files/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-# <script type="text/javascript" src="./js/showmemyblog.js"></script>
-#  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
 def writeHTML(*args):
     global imgNum, divNum, buttonNum, h1Num, pNum
     scriptString = "<script src = \"https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js\"></script>"
+    refreshString = "<meta http-equiv= refresh content = 1>"
     doc, tag, text = Doc().tagtext()
     with tag('html'):
         with tag('head'):
+            doc.asis(refreshString)
             doc.stag('link', rel='stylesheet', href='https://www.w3schools.com/w3css/4/w3.css')
             doc.stag('link', rel='stylesheet', href='https://fonts.googleapis.com/css?family=Montserrat')
             doc.stag('link', rel='stylesheet', href='https://fonts.googleapis.com/icon?family=Material+Icons')
@@ -104,7 +100,7 @@ def writeHTML(*args):
                     h1Num = 0
                     pNum = 0  
             doc.asis(scriptString)
-          #  with tag('script', src='https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js'):
+
     """
     with tag('html'):
         with tag('body', id = 'hello'):
@@ -169,7 +165,6 @@ cssString = """\
         left: auto;
     }
     #container div {
-        display: block;
         position: relative;
         float: none;
         width: 300px;
@@ -186,6 +181,7 @@ cssString = """\
     }
 }
 """
+
 def writeCSS(*args):
     global imgNum, divNum, buttonNum, h1Num, pNum, cssString
     file = open("C:/yolo/pytorch-yolo-v3/test.css",'w')
@@ -228,8 +224,6 @@ def writeCSS(*args):
         pNum = 0
     file.write(cssString)    
     file.close()
-
-
 
 
 def calcPosition(c1x, c1y, c2x, c2y):
