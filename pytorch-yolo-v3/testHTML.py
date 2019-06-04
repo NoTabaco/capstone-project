@@ -77,7 +77,7 @@ def writeHTML(*args):
     doc, tag, text = Doc().tagtext()
     with tag('html'):
         with tag('head'):
-            doc.asis(refreshString)
+            #doc.asis(refreshString)
             doc.stag('link', rel='stylesheet', href='https://www.w3schools.com/w3css/4/w3.css')
             doc.stag('link', rel='stylesheet', href='https://fonts.googleapis.com/css?family=Montserrat')
             doc.stag('link', rel='stylesheet', href='https://fonts.googleapis.com/icon?family=Material+Icons')
@@ -101,26 +101,6 @@ def writeHTML(*args):
                     pNum = 0  
             doc.asis(scriptString)
 
-    """
-    with tag('html'):
-        with tag('body', id = 'hello'):
-
-            checkShape()
-            
-            with tag('h1'):
-                text('Hello world!')
-            with tag('div', style = "background-color:lightblue"):
-                text('Hello div!')
-            with tag('button', onclick="alert('Hello Button!')"):
-                text("Click Me!")
-            with tag('div', id='photo-container'):
-                doc.stag('img', src='C:/yolo/pytorch-yolo-v3/yattag-master/LGS.jpg', klass="photo")
-            with tag('form', action = ""):
-                doc.input(name = 'title', type = 'text')
-                with doc.textarea(name = 'contact_message'):
-                    pass
-                doc.stag('input', type = 'submit', value = 'Send my message')
-            """
 #   print(doc.getvalue())
 
     file = open("C:/yolo/pytorch-yolo-v3/test.html",'w')
@@ -182,13 +162,12 @@ cssString = """\
 }
 """
 
-def writeCSS(*args):
+def writeCSS(*args, cssWidth, cssHeight):
     global imgNum, divNum, buttonNum, h1Num, pNum, cssString
     file = open("C:/yolo/pytorch-yolo-v3/test.css",'w')
     for i in args:
         for j in i:
-            print(j, end='\n')
-            pList = calcPosition(j[1], j[2], j[3], j[4])
+            pList = calcPosition(j[1], j[2], j[3], j[4], cssWidth, cssHeight)
             if j[0]=='img':
                 tag='div#img_' + str(imgNum)
                 imgNum = imgNum + 1    
@@ -225,12 +204,10 @@ def writeCSS(*args):
     file.write(cssString)    
     file.close()
 
-
-def calcPosition(c1x, c1y, c2x, c2y):
-    htmlX = (int)((c1x/480) * 100)
-    htmlY = (int)((c1y/360) * 100)
-    shapeWidth = (int)((c2x - c1x) / 480 * 100)
-    shapeHeight = (int)((c2y - c1y) / 360 * 100)
+def calcPosition(c1x, c1y, c2x, c2y, width, height):
+    htmlX = (int)((c1x/width) * 100)
+    htmlY = (int)((c1y/height) * 100)
+    shapeWidth = (int)((c2x - c1x) / width * 100)
+    shapeHeight = (int)((c2y - c1y) / height * 100)
     positionList = [htmlX, htmlY, shapeWidth, shapeHeight]
     return positionList
-

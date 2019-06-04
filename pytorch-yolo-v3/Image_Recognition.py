@@ -8,12 +8,23 @@ import cv2
 from util import *
 from darknet import Darknet
 from preprocess import prep_image, inp_to_image, letterbox_image
+from pathlib import Path
 import pandas as pd
 import random 
 import pickle as pkl
 import argparse
 import testHTML
+import socket
 
+def recvall(sock, count):
+    # 바이트 문자열
+    buf = b''
+    while count:
+        newbuf = sock.recv(count)
+        if not newbuf: return None
+        buf += newbuf
+        count -= len(newbuf)
+    return buf
 
 def get_test_input(input_dim, CUDA):
     img = cv2.imread("dog-cycle-car.png")
@@ -27,6 +38,7 @@ def get_test_input(input_dim, CUDA):
         img_ = img_.cuda()
     
     return img_
+
 
 def prep_image(img, inp_dim):
     """
@@ -42,19 +54,18 @@ def prep_image(img, inp_dim):
     img_ = torch.from_numpy(img_).float().div(255.0).unsqueeze(0)
     return img_, orig_im, dim
 
-
-
-
 def list_Sort(boxList, shape):
-
+    length = 0
     if boxList == []:
-        return 0
+        return length
     else:
         for idx, val in enumerate(boxList):   
             if val[1] <= shape[1] and val[2] <= shape[2]:
+                length = idx
                 continue
             elif val[1] < shape[1] and val[2] > shape[2]:
                 if val[2] < shape[4]:
+                    length = idx
                     continue
                 else:
                     return idx
@@ -62,14 +73,16 @@ def list_Sort(boxList, shape):
                 if val[4] > shape[2]:
                     return idx
                 else:
+                    length = idx
                     continue
             else:
                 return idx
-
+        return length
 
 
 boxList = []
 shape = ['Default', 0, 0, 0, 0]
+
 
 def write(x, img):
     c1 = tuple(x[1:3].int())
@@ -78,8 +91,8 @@ def write(x, img):
     label = "{0}".format(classes[cls])
     color = random.choice(colors)
     cv2.rectangle(img, c1, c2, color, 1)
-
-    ## label, c1 (x, y), c2 (x, y)
+    
+    # label, c1 (x, y), c2 (x, y)
     strLabel = str(label)
     c1xNum = int(c1[0])
     c1yNum = int(c1[1])
@@ -88,17 +101,10 @@ def write(x, img):
     
     global shape
     shape = [strLabel, round(c1xNum, -1), round(c1yNum, -1), round(c2xNum, -1), round(c2yNum, -1)]
- 
-    boxList.insert(list_Sort(boxList, shape), shape)
-    print(boxList)
 
-    """
-    with open("C:/yolo/pytorch-yolo-v3/test.txt", 'w') as f:
-        f.write(str(boxList))
-        f.write("\n")
-        f.close()
-    """
-    
+    boxList.insert(list_Sort(boxList, shape), shape)
+    #print(boxList, end='\n')
+    #print(j, end='\n')
     t_size = cv2.getTextSize(label, cv2.FONT_HERSHEY_PLAIN, 1 , 1)[0]
     c2 = c1[0] + t_size[0] + 3, c1[1] + t_size[1] + 4
     cv2.rectangle(img, c1, c2,color, -1)
@@ -109,9 +115,8 @@ def write(x, img):
 def arg_parse():
     """
     Parse arguements to the detect module
-    
+
     """
-    
     
     parser = argparse.ArgumentParser(description='YOLO v3 Video Detection Module')
    
@@ -119,8 +124,8 @@ def arg_parse():
                         "Video to run detection upon",
                         default = "video.avi", type = str)
     parser.add_argument("--dataset", dest = "dataset", help = "Dataset on which the network has been trained", default = "pascal")
-    parser.add_argument("--confidence", dest = "confidence", help = "Object Confidence to filter predictions", default = 0.5)
-    parser.add_argument("--nms_thresh", dest = "nms_thresh", help = "NMS Threshhold", default = 0.4)
+    parser.add_argument("--confidence", dest = "confidence", help = "Object Confidence to filter predictions", default = 0.2)
+    parser.add_argument("--nms_thresh", dest = "nms_thresh", help = "NMS Threshhold", default = 0.2)
     parser.add_argument("--cfg", dest = 'cfgfile', help = 
                         "Config file",
                         default = "cfg/yolov3.cfg", type = str)
@@ -129,9 +134,8 @@ def arg_parse():
                         default = "yolov3.weights", type = str)
     parser.add_argument("--reso", dest = 'reso', help = 
                         "Input resolution of the network. Increase to increase accuracy. Decrease to increase speed",
-                        default = "416", type = str)
+                        default = "704", type = str)
     return parser.parse_args()
-
 
 if __name__ == '__main__':
     args = arg_parse()
@@ -144,7 +148,9 @@ if __name__ == '__main__':
     num_classes = 80
 
     CUDA = torch.cuda.is_available()
+    
     bbox_attrs = 5 + num_classes
+    
     print("Loading network.....")
     model = Darknet(args.cfgfile)
     model.load_weights(args.weightsfile)
@@ -162,27 +168,35 @@ if __name__ == '__main__':
 
     model.eval()
 
-    videofile = args.video
+    HOST='192.168.0.9'
+    PORT=5001
+
+    s=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+    s.bind((HOST,PORT))
+    s.listen(10)
+    conn, addr=s.accept()
+
+    frame_width = 480
+    frame_height = 320
     
-    cap = cv2.VideoCapture(videofile)
-    
-    assert cap.isOpened(), 'Cannot capture source'
-    
+    out = cv2.VideoWriter('video_out.mp4',cv2.VideoWriter_fourcc('M','J','P','G'), 30, (frame_width,frame_height))
+
     frames = 0
     start = time.time() 
-    a = cap.isOpened()   
-    ret, frame = cap.read()
-    img, orig_im, dim = prep_image(frame, inp_dim)
+
+    while True:
+        boxList = [] 
+
+        length = recvall(conn, 16)
+        stringData = recvall(conn, int(length))
+        data = np.fromstring(stringData, dtype = 'uint8')
+        frame = cv2.imdecode(data, cv2.IMREAD_COLOR)
+        if frame is not None:
     
-    while a:
-        boxList = []    
-     #  ret, frame = cap.read()
-        if ret:
-                
+            img, orig_im, dim = prep_image(frame, inp_dim)
             # Copy Image
             im_dim = torch.FloatTensor(dim).repeat(1,2)                        
        
-            
             if CUDA:
                 im_dim = im_dim.cuda()
                 img = img.cuda()
@@ -198,10 +212,8 @@ if __name__ == '__main__':
                 key = cv2.waitKey(1)
                 if key & 0xFF == ord('q'):
                     break
+                out.write(orig_im)
                 continue
-            
-            
-
             
             im_dim = im_dim.repeat(output.size(0), 1)
             scaling_factor = torch.min(inp_dim/im_dim,1)[0].view(-1,1)
@@ -219,20 +231,32 @@ if __name__ == '__main__':
             colors = pkl.load(open("pallete", "rb"))
             
             list(map(lambda x: write(x, orig_im), output))
-            cv2.imshow("ORGframe", orig_im)
-            testHTML.writeHTML(boxList)
-            testHTML.writeCSS(boxList)
+            cv2.imshow("frame", orig_im)
+
+            beforeList = []
+            afterList = []
+            afterList = boxList
+            # 앞의 List와 뒤의 List의 갯수가 다를 시 HTML과 CSS 작성 
+            if len(beforeList) != len(afterList):
+                testHTML.writeHTML(boxList)
+                testHTML.writeCSS(boxList, cssWidth = frame_width, cssHeight = frame_height)
+            else:
+                for idx in beforeList:
+                    if beforeList[idx][0] != afterList[idx][0]:
+                        testHTML.writeHTML(boxList),
+                        testHTML.writeCSS(boxList, cssWidth, cssHeight)
+                        break
+            beforeList = afterList
+
             key = cv2.waitKey(1)
             if key & 0xFF == ord('q'):
                 break
             frames += 1
             print("FPS of the video is {:5.2f}".format( frames / (time.time() - start)))
-
-            
+            out.write(orig_im)
         else:
             break
-    
-
-    
+     
+out.release()    
     
 

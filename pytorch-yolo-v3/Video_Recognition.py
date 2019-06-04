@@ -12,7 +12,7 @@ import pandas as pd
 import random 
 import pickle as pkl
 import argparse
-import testHTML
+import testHTML 
 
 
 def get_test_input(input_dim, CUDA):
@@ -28,6 +28,7 @@ def get_test_input(input_dim, CUDA):
     
     return img_
 
+
 def prep_image(img, inp_dim):
     """
     Prepare image for inputting to the neural network. 
@@ -41,9 +42,6 @@ def prep_image(img, inp_dim):
     img_ = img[:,:,::-1].transpose((2,0,1)).copy()
     img_ = torch.from_numpy(img_).float().div(255.0).unsqueeze(0)
     return img_, orig_im, dim
-
-
-
 
 def list_Sort(boxList, shape):
     length = 0
@@ -82,7 +80,7 @@ def write(x, img):
     label = "{0}".format(classes[cls])
     color = random.choice(colors)
     cv2.rectangle(img, c1, c2, color, 1)
-
+    
     # label, c1 (x, y), c2 (x, y)
     strLabel = str(label)
     c1xNum = int(c1[0])
@@ -94,8 +92,8 @@ def write(x, img):
     shape = [strLabel, round(c1xNum, -1), round(c1yNum, -1), round(c2xNum, -1), round(c2yNum, -1)]
 
     boxList.insert(list_Sort(boxList, shape), shape)
-    #print(boxList)
-
+    #print(boxList, end='\n')
+    #print(j, end='\n')
     t_size = cv2.getTextSize(label, cv2.FONT_HERSHEY_PLAIN, 1 , 1)[0]
     c2 = c1[0] + t_size[0] + 3, c1[1] + t_size[1] + 4
     cv2.rectangle(img, c1, c2,color, -1)
@@ -115,8 +113,8 @@ def arg_parse():
                         "Video to run detection upon",
                         default = "video.avi", type = str)
     parser.add_argument("--dataset", dest = "dataset", help = "Dataset on which the network has been trained", default = "pascal")
-    parser.add_argument("--confidence", dest = "confidence", help = "Object Confidence to filter predictions", default = 0.5)
-    parser.add_argument("--nms_thresh", dest = "nms_thresh", help = "NMS Threshhold", default = 0.4)
+    parser.add_argument("--confidence", dest = "confidence", help = "Object Confidence to filter predictions", default = 0.2)
+    parser.add_argument("--nms_thresh", dest = "nms_thresh", help = "NMS Threshhold", default = 0.2)
     parser.add_argument("--cfg", dest = 'cfgfile', help = 
                         "Config file",
                         default = "cfg/yolov3.cfg", type = str)
@@ -125,9 +123,8 @@ def arg_parse():
                         default = "yolov3.weights", type = str)
     parser.add_argument("--reso", dest = 'reso', help = 
                         "Input resolution of the network. Increase to increase accuracy. Decrease to increase speed",
-                        default = "416", type = str)
+                        default = "704", type = str)
     return parser.parse_args()
-
 
 if __name__ == '__main__':
     args = arg_parse()
@@ -160,17 +157,21 @@ if __name__ == '__main__':
 
     model.eval()
     
-    videofile = args.video
-    
-    cap = cv2.VideoCapture(videofile)
+    videofile = cv2.VideoCapture(0)
+
+  # cap = cv2.VideoCapture(videofile)
+    cap = videofile
+  # cap.set(3, 480)
+  # cap.set(4, 360)
     frame_width = int(cap.get(3))
     frame_height = int(cap.get(4))
+   
     out = cv2.VideoWriter('video_out.mp4',cv2.VideoWriter_fourcc('M','J','P','G'), 30, (frame_width,frame_height))
     assert cap.isOpened(), 'Cannot capture source'
     
     frames = 0
     start = time.time() 
-    
+
     while cap.isOpened():
         boxList = []    
         ret, frame = cap.read()
@@ -198,9 +199,6 @@ if __name__ == '__main__':
                 out.write(orig_im)
                 continue
             
-            
-
-            
             im_dim = im_dim.repeat(output.size(0), 1)
             scaling_factor = torch.min(inp_dim/im_dim,1)[0].view(-1,1)
             
@@ -217,20 +215,20 @@ if __name__ == '__main__':
             colors = pkl.load(open("pallete", "rb"))
             
             list(map(lambda x: write(x, orig_im), output))
-            cv2.imshow("ORGframe", orig_im)
+            cv2.imshow("frame", orig_im)
 
             beforeList = []
             afterList = []
             afterList = boxList
-            # 두 개 묶어서 list 갯수 변화시 HTML, CSS 실행
+            # 앞의 List와 뒤의 List의 갯수가 다를 시 HTML과 CSS 작성 
             if len(beforeList) != len(afterList):
                 testHTML.writeHTML(boxList)
-                testHTML.writeCSS(boxList)
+                testHTML.writeCSS(boxList, cssWidth = frame_width, cssHeight = frame_height)
             else:
                 for idx in beforeList:
                     if beforeList[idx][0] != afterList[idx][0]:
-                        testHTML.writeHTML(boxList)
-                        testHTML.writeCSS(boxList)
+                        testHTML.writeHTML(boxList),
+                        testHTML.writeCSS(boxList, cssWidth, cssHeight)
                         break
             beforeList = afterList
 
@@ -243,7 +241,7 @@ if __name__ == '__main__':
             
         else:
             break
-    
+
 out.release()    
     
 
