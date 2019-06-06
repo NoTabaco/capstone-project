@@ -1,0 +1,122 @@
+h1#h1_0{
+display: flex;
+position: absolute;
+text-align: center;
+margin: 20px;
+top: 3%;
+left: 14%;
+width: 14%;
+height: 15%;
+}
+div#div_0{
+display: flex;
+position: absolute;
+text-align: center;
+margin: 20px;
+top: 25%;
+left: 12%;
+width: 18%;
+height: 18%;
+}
+div#img_0{
+display: flex;
+position: absolute;
+text-align: center;
+margin: 20px;
+top: 25%;
+left: 43%;
+width: 18%;
+height: 28%;
+}
+div#img_1{
+display: flex;
+position: absolute;
+text-align: center;
+margin: 20px;
+top: 25%;
+left: 75%;
+width: 18%;
+height: 34%;
+}
+div#p_0{
+display: flex;
+position: absolute;
+text-align: center;
+margin: 20px;
+top: 70%;
+left: 12%;
+width: 12%;
+height: 9%;
+}
+button#button_0{
+display: flex;
+position: absolute;
+text-align: center;
+margin: 20px;
+top: 70%;
+left: 77%;
+width: 14%;
+height: 9%;
+}
+button#button_1{
+display: flex;
+position: absolute;
+text-align: center;
+margin: 20px;
+top: 70%;
+left: 43%;
+width: 18%;
+height: 12%;
+}
+@media screen and (max-width:980px){
+    #container{
+        display: flex;
+        width:100%;
+    }
+}
+
+@media screen and (max-width:700px){
+    #container{
+        display: block;
+    }
+    #container button {
+        display: block;
+        position: relative;
+        float: none;
+        width: 300px;
+        top: auto;
+        left: auto;
+        
+    }
+    #container h1 {
+        display: block;
+        position: relative;
+        float: none;
+        width: 300px;
+        top: auto;
+        left: auto;
+    }
+    #container img {
+        display: block;
+        position: relative;
+        float: none;
+        width: 300px;
+        top: auto;
+        left: auto;
+    }
+    #container div {
+        position: relative;
+        float: none;
+        width: 300px;
+        top: auto;
+        left: auto;
+    }
+    #container p {
+        display: block;
+        position: relative;
+        float: none;
+        width: 300px;
+        top: auto;
+        left: auto;
+    }
+}
