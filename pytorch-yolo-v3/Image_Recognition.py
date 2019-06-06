@@ -134,7 +134,7 @@ def arg_parse():
                         default = "yolov3.weights", type = str)
     parser.add_argument("--reso", dest = 'reso', help = 
                         "Input resolution of the network. Increase to increase accuracy. Decrease to increase speed",
-                        default = "704", type = str)
+                        default = "768", type = str)
     return parser.parse_args()
 
 if __name__ == '__main__':
